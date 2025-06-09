@@ -7,3 +7,10 @@ export class CreateAuthDto {
   @IsPhoneNumber()
   phone: string;
 }
+
+export class verifyOtp {
+  @IsString()
+  phone: string;
+  @IsString()
+  code: string;
+}
