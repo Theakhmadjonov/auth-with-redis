@@ -34,4 +34,8 @@ export class RedisService{
         const ttl = await this.redis.ttl(key);
         return ttl;
     }
+
+    async delOtp(key: string) {
+        await this.redis.del(key);
+    }
 }
