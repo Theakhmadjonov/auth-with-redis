@@ -10,4 +10,6 @@ export class sendCodeLoginDto {
 export class verifyCodeLoginDto {
   @IsString()
   code: string;
-} 
+  @IsString()
+  phone: string;
+}

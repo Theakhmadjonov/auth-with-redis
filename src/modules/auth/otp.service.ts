@@ -52,6 +52,13 @@ export class OtpService {
     return sessionToken;
   }
 
+  async verifySendedCodeLogin(key: string, code: string) {
+    const otp = await this.redis.getOtp(key);
+    if (!otp || otp !== code) throw new BadRequestException('Code invalid');
+    await this.redis.delOtp(key);
+    return true;
+  }
+
   async CheckTokenUSer(key: string, token: string) {
     const sessionToken = await this.redis.getKey(key);
     if (!sessionToken || sessionToken !== token)

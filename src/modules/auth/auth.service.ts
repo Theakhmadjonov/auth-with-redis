@@ -103,5 +103,20 @@ export class AuthService {
     }
   }
 
-  async verifyCodeLogin(code: verifyCodeLoginDto) {}
+  async verifyCodeLogin(code: verifyCodeLoginDto) {
+    try {
+      const key = `user:${data.phone}`;
+      const sessionToken = await this.otp.verifyOtpSendedCode(
+        key,
+        data.code,
+      );
+      return {
+        message: 'success',
+        statusCode: 200,
+        sessionToken,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException('Internal server error');
+    }
+  }
 }
