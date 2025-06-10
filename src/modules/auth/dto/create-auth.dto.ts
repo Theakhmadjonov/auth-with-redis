@@ -4,7 +4,6 @@ export class CreateAuthDto {
   @IsString()
   username: string;
   @IsString()
-  @IsPhoneNumber()
   phone: string;
 }
 
@@ -13,4 +12,13 @@ export class verifyOtp {
   phone: string;
   @IsString()
   code: string;
+}
+
+export class RegisterDto {
+  @IsString()
+  phone: string;
+  @IsString()
+  password: string;
+  @IsString()
+  session_token: string;
 }

@@ -7,8 +7,9 @@ import {
   Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto, verifyOtp } from './dto/create-auth.dto';
+import { CreateAuthDto, RegisterDto, verifyOtp } from './dto/create-auth.dto';
 import { Request, Response } from 'express';
+import { sendCodeLoginDto, verifyCodeLoginDto } from './dto/login-auth.dto';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -34,18 +35,46 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@Res({ passthrough: true }) res: Response) {
+  async register(
+    @Body() data: RegisterDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     try {
-      const token = 'ccc';
+      const token = await this.authService.register(data);
       res.cookie('token', token, {
         httpOnly: true,
-        maxAge: 2 * 3600 * 1000,
+        maxAge: 1.1 * 3600 * 1000,
       });
+      return { token };
     } catch (error) {
       throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  @Post('login')
-  async login() {}
+  @Post('send-code-login')
+  async sendCodeLogin(@Body() data: sendCodeLoginDto) {
+    try {
+      const response = await this.authService.sendCodeLogin(data);
+      return response;
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Post('verify-login')
+  async verifyLogin(
+    @Body() data: verifyCodeLoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    try {
+      const token = await this.authService.verifyCodeLogin(data);
+      res.cookie('token', token, {
+        httpOnly: true,
+        maxAge: 1.1 * 3600 * 1000,
+      });
+      return { token };
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }
