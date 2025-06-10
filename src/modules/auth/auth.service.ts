@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   InternalServerErrorException,
@@ -103,18 +104,18 @@ export class AuthService {
     }
   }
 
-  async verifyCodeLogin(code: verifyCodeLoginDto) {
+  async verifyCodeLogin(data: verifyCodeLoginDto) {
     try {
+      const existedUser = await this.db.prisma.user.findUnique({ where: { phone: data.phone } });
+      if (!existedUser) throw new BadRequestException('User not found');
       const key = `user:${data.phone}`;
-      const sessionToken = await this.otp.verifyOtpSendedCode(
+      await this.otp.verifySendedCodeLogin(
         key,
         data.code,
       );
-      return {
-        message: 'success',
-        statusCode: 200,
-        sessionToken,
-      };
+      const token = await this.jwt.signAsync({ userId: existedUser.id });
+      await this.otp.delTokenUser(key);
+      
     } catch (error) {
       throw new InternalServerErrorException('Internal server error');
     }
