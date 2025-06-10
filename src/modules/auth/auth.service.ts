@@ -115,7 +115,7 @@ export class AuthService {
       );
       const token = await this.jwt.signAsync({ userId: existedUser.id });
       await this.otp.delTokenUser(key);
-      return 1;
+      return token;
     } catch (error) {
       throw new InternalServerErrorException('Internal server error');
     }
